@@ -194,6 +194,68 @@
       font-size: 0.82rem;
     }
 
+    .lyrics {
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .lyrics summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 42px;
+      color: var(--text);
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+    }
+
+    .lyrics summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .lyrics summary::after {
+      content: "⌄";
+      flex: 0 0 auto;
+      color: var(--accent);
+      font-size: 1.3rem;
+      line-height: 1;
+      transform: translateY(-2px);
+      transition: transform 160ms ease;
+    }
+
+    .lyrics[open] summary::after {
+      transform: rotate(180deg) translateY(2px);
+    }
+
+    .lyrics-text {
+      display: block;
+      width: 100%;
+      min-height: 12rem;
+      margin-top: 14px;
+      padding: 16px 17px;
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      outline: none;
+      resize: vertical;
+      overflow: hidden;
+      color: var(--text);
+      background: rgba(10, 9, 13, 0.34);
+      font: inherit;
+      font-size: 0.93rem;
+      line-height: 1.65;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    .lyrics-text:focus {
+      border-color: rgba(215, 183, 255, 0.4);
+      box-shadow: 0 0 0 3px rgba(215, 183, 255, 0.08);
+    }
+
     .status {
       display: none;
       margin: 18px 0 0;
@@ -285,6 +347,17 @@
         <span class="file-note">WAV · 48 kHz · stereo · 16 bit</span>
       </div>
 
+      <details class="lyrics">
+        <summary>Text písně</summary>
+        <textarea
+          class="lyrics-text"
+          readonly
+          spellcheck="false"
+          aria-label="Text písně 30 let svatby – A je to!"
+          data-src="./tracks/30let-svatby-a-je-to/lyrics.txt"
+        >Načítání textu…</textarea>
+      </details>
+
       <p class="status" id="audio-status" role="status">
         Audio soubor zatím není v repozitáři. Očekávaný soubor <strong>tracks/30let-svatby-a-je-to/30letSvatbyAJeTo.wav</strong> není dostupný a přehrávač se aktivuje automaticky.
       </p>
@@ -300,6 +373,29 @@
     player.addEventListener("error", () => {
       status.style.display = "block";
     }, { once: true });
+
+    async function loadLyrics(details) {
+      const field = details.querySelector(".lyrics-text[data-src]");
+      if (!field || field.dataset.loaded === "true") return;
+
+      try {
+        const response = await fetch(field.dataset.src);
+        if (!response.ok) throw new Error("Lyrics request failed");
+
+        field.value = (await response.text()).replace(/\r\n/g, "\n").trimEnd();
+        field.dataset.loaded = "true";
+        field.style.height = "auto";
+        field.style.height = (field.scrollHeight + 2) + "px";
+      } catch {
+        field.value = "Text písně se nepodařilo načíst.";
+      }
+    }
+
+    document.querySelectorAll(".lyrics").forEach((details) => {
+      details.addEventListener("toggle", () => {
+        if (details.open) loadLyrics(details);
+      });
+    });
   </script>
 </body>
 </html>
