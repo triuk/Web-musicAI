@@ -6,18 +6,20 @@ Jednoduchá statická stránka pro poslech a stažení hudby vytvořené pomocí
 
 - responzivní single-page web bez frameworku a externích závislostí
 - HTML5 audio přehrávač
-- přímé stažení MP3
+- přímé stažení WAV
 - GitHub Pages deployment přes GitHub Actions
 
 ## Audio
 
 Stránka očekává soubor:
 
-```
-30letSvatbyAJeTo.mp3
-```
+\`\`\`
+tracks/
+└── 30let-svatby-a-je-to/
+    └── 30letSvatbyAJeTo.wav
+\`\`\`
 
-v kořeni repozitáře.
+Každá další skladba má vlastní adresář v \`tracks/\`.
 
 ## GitHub Pages
 
